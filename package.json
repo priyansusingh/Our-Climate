@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset && npm run db:seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -39,6 +43,7 @@
     "react-intersection-observer": "^9.16.0",
     "recharts": "^3.2.1",
     "tailwind-merge": "^3.3.1",
+    "tsx": "^4.20.6",
     "zod": "^4.1.11"
   },
   "devDependencies": {

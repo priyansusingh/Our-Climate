@@ -1,50 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+// Temporary mock data - replace with Prisma when database is ready
+const mockEvents = [
+  {
+    id: '1',
+    title: 'Community Tree Planting Day',
+    description: 'Join us for a day of tree planting in Central Park.',
+    date: '2024-04-15T09:00:00Z',
+    location: 'Central Park, New York',
+    type: 'tree-planting',
+    createdAt: '2024-01-01T00:00:00Z'
+  },
+  // ... more events
+]
+
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type')
-    const limit = parseInt(searchParams.get('limit') || '50')
-
+    // For now, return mock data
+    // When database is ready, uncomment the Prisma code below:
+    
+    /*
     const events = await prisma.event.findMany({
-      where: type && type !== 'all' ? { type } : undefined,
-      orderBy: { date: 'asc' },
-      take: limit
+      where: {
+        date: {
+          gte: new Date()
+        }
+      },
+      orderBy: { date: 'asc' }
     })
-
     return NextResponse.json(events)
+    */
+    
+    return NextResponse.json(mockEvents)
   } catch (error) {
-    console.error('Get events error:', error)
+    console.error('Error fetching events:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { title, description, date, location, type, imageUrl } = body
-
-    const event = await prisma.event.create({
-      data: {
-        title,
-        description,
-        date: new Date(date),
-        location,
-        type,
-        imageUrl
-      }
-    })
-
-    return NextResponse.json(event)
-
-  } catch (error) {
-    console.error('Create event error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch events' },
       { status: 500 }
     )
   }

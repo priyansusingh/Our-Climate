@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { newsletterSchema } from '@/lib/validations'
 import { z } from 'zod'
+
+const newsletterSchema = z.object({
+  email: z.string().email('Invalid email address')
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,19 +17,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingSubscriber) {
-      if (existingSubscriber.active) {
-        return NextResponse.json(
-          { error: 'Email already subscribed' },
-          { status: 400 }
-        )
-      } else {
-        // Reactivate subscription
-        await prisma.newsletterSubscriber.update({
-          where: { email },
-          data: { active: true }
-        })
-        return NextResponse.json({ message: 'Subscription reactivated' })
-      }
+      return NextResponse.json(
+        { error: 'Email already subscribed' },
+        { status: 400 }
+      )
     }
 
     // Create new subscriber
@@ -34,50 +28,27 @@ export async function POST(request: NextRequest) {
       data: { email }
     })
 
-    return NextResponse.json({
-      message: 'Successfully subscribed to newsletter',
-      id: subscriber.id
-    })
-
+    return NextResponse.json({ success: true, subscriber })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      )
-    }
-
     console.error('Newsletter subscription error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to subscribe' },
       { status: 500 }
     )
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    const email = searchParams.get('email')
-
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
-    }
-
-    await prisma.newsletterSubscriber.updateMany({
-      where: { email },
-      data: { active: false }
+    const count = await prisma.newsletterSubscriber.count({
+      where: { active: true }
     })
-
-    return NextResponse.json({ message: 'Successfully unsubscribed' })
-
+    
+    return NextResponse.json({ count })
   } catch (error) {
-    console.error('Newsletter unsubscription error:', error)
+    console.error('Error fetching newsletter count:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch count' },
       { status: 500 }
     )
   }

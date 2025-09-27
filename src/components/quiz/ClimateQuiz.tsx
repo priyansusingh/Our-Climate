@@ -101,16 +101,16 @@ export function ClimateQuiz() {
             </div>
             <div className="mb-6">
               {score === questions.length && (
-                <p className="text-green-600">Perfect! You&apos;re a climate expert!</p>
+                <p className="text-green-600">Perfect! You&apos;re a climate expert! 🌍</p>
               )}
               {score >= questions.length * 0.8 && score < questions.length && (
-                <p className="text-blue-600">Great job! You know a lot about climate change!</p>
+                <p className="text-blue-600">Great job! You know a lot about climate change! 🌱</p>
               )}
               {score >= questions.length * 0.6 && score < questions.length * 0.8 && (
-                <p className="text-yellow-600">Good effort! Keep learning about climate science!</p>
+                <p className="text-yellow-600">Good effort! Keep learning about climate science! 📚</p>
               )}
               {score < questions.length * 0.6 && (
-                <p className="text-orange-600">There&apos;s room to learn more about climate change!</p>
+                <p className="text-orange-600">There&apos;s room to learn more about climate change! 🤔</p>
               )}
             </div>
             <Button onClick={resetQuiz}>Take Quiz Again</Button>
@@ -195,7 +195,7 @@ export function ClimateQuiz() {
                 Score: {score}/{currentQuestion + 1}
               </div>
               <Button onClick={nextQuestion}>
-                {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                {currentQuestion < questions.length - 1 ? 'Next Question' : 'View Results'}
               </Button>
             </div>
           )}
