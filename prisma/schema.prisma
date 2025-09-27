@@ -79,3 +79,7 @@ model BlogPost {
   
   @@map("blog_posts")
 }
+
+generator db_seed {
+  provider = "prisma-client-js"
+}

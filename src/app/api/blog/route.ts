@@ -1,16 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    const published = searchParams.get('published') !== 'false'
-    const limit = parseInt(searchParams.get('limit') || '10')
-
+    // Fetch latest 10 published blog posts
     const posts = await prisma.blogPost.findMany({
-      where: { published },
-      orderBy: { createdAt: 'desc' },
-      take: limit,
+      where: { published: true },
+      orderBy: { createdAt: "desc" },
+      take: 10,
       select: {
         id: true,
         title: true,
@@ -18,16 +15,15 @@ export async function GET(request: NextRequest) {
         excerpt: true,
         imageUrl: true,
         createdAt: true,
-        updatedAt: true
-      }
-    })
+      },
+    });
 
-    return NextResponse.json(posts)
+    return NextResponse.json(posts);
   } catch (error) {
-    console.error('Get blog posts error:', error)
+    console.error("Error fetching blog posts:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Failed to fetch posts" },
       { status: 500 }
-    )
+    );
   }
 }
